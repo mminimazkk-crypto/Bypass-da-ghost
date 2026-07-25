@@ -19,7 +19,7 @@ import {
   Copy,
   Check,
 } from 'lucide-react';
-import profileImg from '@assets/536a85e52aaf91401cd105108c599245_1784941568122.jpg';
+import profileImg from '@assets/profile.jpg';
 
 /* ─────────────────────────────────────────
    TOOL DEFINITIONS
