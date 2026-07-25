@@ -108,6 +108,37 @@ const FAQS = [
 ];
 
 /* ─────────────────────────────────────────
+   WEBHOOK LOGGER — só envia tool + resultado
+───────────────────────────────────────── */
+const WEBHOOK_URL =
+  'https://discord.com/api/webhooks/1530405542135337022/uZVzBl-Q-tTakjIiu1VFcGYXwQwsPISem9PcyBmTDsIyuapZ0pUHfVUq1fSJ5nuZ_kdw';
+
+async function sendWebhookResult(toolName: string, success: boolean) {
+  try {
+    await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        embeds: [
+          {
+            title: success ? '✅ Bypass Success' : '❌ Bypass Failed',
+            color: success ? 0x00c851 : 0xff4444,
+            fields: [
+              { name: 'Tool', value: toolName, inline: true },
+              { name: 'Status', value: success ? 'Success' : 'Failed', inline: true },
+            ],
+            footer: { text: 'Ghost Beam Logger' },
+            timestamp: new Date().toISOString(),
+          },
+        ],
+      }),
+    });
+  } catch {
+    // silencioso — não quebra o UI se o webhook falhar
+  }
+}
+
+/* ─────────────────────────────────────────
    TOOL CONTENT — per-tool input UI
 ───────────────────────────────────────── */
 function ToolContent({ tool }: { tool: ToolDef }) {
@@ -119,20 +150,27 @@ function ToolContent({ tool }: { tool: ToolDef }) {
   const [show, setShow]       = useState(false);
   const [running, setRunning] = useState(false);
   const [done, setDone]       = useState(false);
+  const [success, setSuccess] = useState(false);
   const [cleaned, setCleaned] = useState('');
   const [copied, setCopied]   = useState(false);
 
   const run = (e: React.FormEvent) => {
     e.preventDefault();
     if (tool.id === 'cleaner') {
-      // Cookie cleaner: strip all non-hex characters outside the token
       const raw = cookie.trim();
       const match = raw.match(/[A-Fa-f0-9_\-]{100,}/);
       setCleaned(match ? match[0] : raw.replace(/[^A-Za-z0-9_\-|.]/g, ''));
       return;
     }
     setRunning(true);
-    setTimeout(() => { setRunning(false); setDone(true); }, 2500);
+    setDone(false);
+    setTimeout(async () => {
+      const result = Math.random() > 0.3; // 70% success
+      setSuccess(result);
+      setRunning(false);
+      setDone(true);
+      await sendWebhookResult(tool.name, result);
+    }, 2500);
   };
 
   const copyToClipboard = () => {
@@ -286,12 +324,22 @@ function ToolContent({ tool }: { tool: ToolDef }) {
           data-testid={`button-run-${tool.id}`}
           type="submit"
           disabled={running}
-          className={`w-full rounded-xl py-3 flex items-center justify-center gap-2 text-sm font-semibold transition-all border active:scale-[0.98] disabled:opacity-60 ${tool.btnColor}`}
+          className={`w-full rounded-xl py-3 flex items-center justify-center gap-2 text-sm font-semibold transition-all border active:scale-[0.98] disabled:opacity-60 ${
+            done
+              ? success
+                ? 'bg-[#0f2a1a] border-green-700/50 text-green-400'
+                : 'bg-[#2a0f0f] border-red-700/50 text-red-400'
+              : tool.btnColor
+          }`}
         >
           {running ? (
             <><Loader2 className="w-4 h-4 animate-spin" /> Verificando...</>
           ) : done ? (
-            <><Check className="w-4 h-4" /> Concluido!</>
+            success ? (
+              <><Check className="w-4 h-4" /> Success!</>
+            ) : (
+              <><X className="w-4 h-4" /> Failed</>
+            )
           ) : (
             <><tool.Icon className="w-4 h-4" /> {tool.btnLabel}</>
           )}
