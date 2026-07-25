@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "Ghost Beam"
+version = "1.0.0"
+id = "artifacts/ghost-beam"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24176
+
+[services.development]
+run = "pnpm --filter @workspace/ghost-beam run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/ghost-beam", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/ghost-beam/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24176"
+BASE_PATH = "/"
