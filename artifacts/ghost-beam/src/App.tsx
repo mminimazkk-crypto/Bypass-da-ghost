@@ -345,6 +345,50 @@ function ToolContent({ tool }: { tool: ToolDef }) {
           )}
         </button>
 
+        {/* ── age bypasser result card ── */}
+        {tool.id === 'age' && done && success && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-xl border border-green-800/40 bg-[#0a1f10] px-4 py-3 flex flex-col gap-2"
+          >
+            <div className="flex items-center gap-2">
+              <Check className="w-3.5 h-3.5 text-green-400 flex-shrink-0" />
+              <span className="text-[11px] font-bold tracking-widest text-green-400 uppercase">Bypass aplicado</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="rounded-lg bg-black/40 border border-white/[0.06] px-3 py-2">
+                <p className="text-[9px] text-white/25 uppercase tracking-widest mb-0.5">Idade anterior</p>
+                <p className="text-sm font-bold text-white/60">18+</p>
+              </div>
+              <div className="rounded-lg bg-black/40 border border-green-800/30 px-3 py-2">
+                <p className="text-[9px] text-green-500/50 uppercase tracking-widest mb-0.5">Nova idade</p>
+                <p className="text-sm font-bold text-green-400">9–12 anos</p>
+              </div>
+            </div>
+            <p className="text-[10px] text-white/25 leading-relaxed">
+              Restrição de idade removida. A conta agora aparece como 9–12 anos nos servidores do Roblox.
+            </p>
+          </motion.div>
+        )}
+
+        {/* ── age bypasser failed card ── */}
+        {tool.id === 'age' && done && !success && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-xl border border-red-800/40 bg-[#1f0a0a] px-4 py-3 flex items-start gap-2"
+          >
+            <X className="w-3.5 h-3.5 text-red-400 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-[11px] font-bold text-red-400 uppercase tracking-widest">Cookie inválido</p>
+              <p className="text-[10px] text-white/30 leading-relaxed mt-0.5">
+                Não foi possível autenticar. Verifique se o cookie está correto e tente novamente.
+              </p>
+            </div>
+          </motion.div>
+        )}
+
       </form>
     </div>
   );
